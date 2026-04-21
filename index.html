@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admission Form</title>
+<style>
+body
+  {
+  font-family: Arial;
+  background: linear-gradient(135deg, #74ebd5, #9face6);
+}
+
+.container {
+  width:95%;
+  margin:auto;
+  background:white;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.2);
+  overflow:hidden;
+}
+
+.header {
+  background: linear-gradient(90deg, #00c853, #009624);
+  color:white;
+  text-align:center;
+  padding:12px;
+  font-size:20px;
+  font-weight:bold;
+}
+
+.search-box {
+  padding:10px;
+  border-bottom:2px solid #ddd;
+  background:#f9f9f9;
+}
+
+input, select {
+  padding:6px;
+  width:100%;
+  border-radius:5px;
+  border:1px solid #ccc;
+  outline:none;
+  transition:0.3s;
+}
+
+input:focus, select:focus {
+  border-color:#4CAF50;
+  box-shadow:0 0 5px #4CAF50;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+}
+
+td {
+  border:1px solid #ddd;
+  padding:8px;
+}
+
+.label {
+  background:#e3f2fd;
+  font-weight:bold;
+  color:#0d47a1;
+}
+
+/* BASE BUTTON */
+button {
+  padding:12px 18px;
+  margin:6px;
+  border:none;
+  border-radius:10px;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:0.3s;
+}
+
+/* HOVER EFFECT */
+button:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* CLICK EFFECT */
+button:active {
+  transform: scale(0.95);
+}
+
+/* SHINE EFFECT */
+button::after {
+  content:'';
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:100%;
+  height:100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+  transition:0.5s;
+}
+
+button:hover::after {
+  left:100%;
+}
+
+/* INDIVIDUAL COLORS */
+.save {
+  background: linear-gradient(45deg, #00c853, #64dd17);
+  box-shadow:0 4px 10px rgba(0,200,83,0.6);
+}
+
+.edit {
+  background: linear-gradient(45deg, #ff9800, #ff5722);
+  box-shadow:0 4px 10px rgba(255,152,0,0.6);
+}
+
+.search {
+  background: linear-gradient(45deg, #212121, #616161);
+  box-shadow:0 4px 10px rgba(0,0,0,0.5);
+}
+
+.new {
+  background: linear-gradient(45deg, #9c27b0, #e040fb);
+  box-shadow:0 4px 10px rgba(156,39,176,0.6);
+}
+
+.excel {
+  background: linear-gradient(45deg, #2196F3, #00bcd4);
+  box-shadow:0 4px 10px rgba(33,150,243,0.6);
+}
+.repoart{
+  background: linear-gradient(45deg, #2196F3, #00bcd4);
+  box-shadow:0 4px 10px rgba(33,150,243,0.6);
+}
+
+button:hover {
+  opacity:0.85;
+}
+
+.save {background:#4CAF50;}
+.edit {background:#ff9800;}
+.search {background:#212121;}
+.new {background:#9c27b0;}
+.excel {background:#2196F3;}
+.repoart {background:#4CAF50;}
+
+.footer {
+  text-align:center;
+  padding:10px;
+  font-weight:bold;
+  color:white;
+  background:linear-gradient(90deg,#00c853,#009624);
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">ADMISSION FORM 2026-27</div>
+<div class="search-box">
+<input id="dakhil" placeholder="Search by Dakhil or Name" oninput="smartSearch()">
+ <div id="resultList" style="background:white; border:1px solid #ccc; max-height:150px; overflow:auto;"></div>
+<button class="new" onclick="newEntry()">➕ New</button>
+<button class="search" onclick="searchData()">🔍Search</button>
+  <button style="background:#673ab7;color:white;padding:10px;border:none;border-radius:8px;"
+onclick="window.location.href='repoart.html'">
+📋 Report
+</button>
+</div>
+<table>
+<tr>
+<td class="label">Class</td><td><select id="class">
+<option value="">Select Class</option>
+<option value="9th">9th</option>
+<option value="11th">11th</option>
+</select></td>
+<td class="label">Subject</td><td><select id="subject">
+<option value="">-- Select Subject --</option>
+
+<option value="512-SANSKRIT">512-SANSKRIT</option>
+<option value="863-IT">863-IT</option>
+<option value="873-AG">873-AG</option>
+<option value="ARTS">ARTS</option>
+<option value="973-AG">973-AG</option>
+<option value="BIOLOGY">BIOLOGY</option>
+<option value="MATHS">MATHS</option>
+<option value="ARTS+IT">ARTS+IT</option>
+<option value="BIO+IT">BIO+IT</option>
+<option value="MATHS+IT">MATHS+IT</option>
+
+</select></td>
+</tr>
+<tr>
+<td class="label">Student Name</td><td><input id="name"></td>
+<td class="label">Father Name</td><td><input id="father"></td>
+</tr>
+<tr>
+<td class="label">Mother Name</td><td><input id="mother"></td>
+<td class="label">DOB</td>
+ <td>
+ <input type="text" id="dob" value="__/__/____"
+onclick="openCalendarDOB()"
+oninput="autoSlashDOB(this)"
+onfocus="clearPlaceholder(this)">
+  <input type="date" id="hiddenDOB" style="display:none" onchange="setDOB()">
+  
+ </td>
+</tr>
+<tr>
+<td class="label">Gender</td>
+<td><select id="gender"><option>Male</option><option>Female</option></select></td>
+<td class="label">Category</td><td><select id="category">
+<option value="">Select Category</option>
+<option value="OBC">OBC</option>
+<option value="SC">SC</option>
+<option value="ST">ST</option>
+</select></td>
+</tr>
+<tr>
+<td class="label">Samagra ID</td>
+<td><input id="samagra"></td>
+
+<td class="label">Samagra Name</td>
+<td><input id="samagra_name"></td>
+</tr>
+
+<tr>
+<td class="label">Account No</td>
+<td>
+<input id="account_no" placeholder="Enter Account Number">
+</td>
+
+<td class="label">IFSC Code</td>
+<td>
+<input id="ifsc_code" placeholder="Enter IFSC Code" oninput="getBankDetails()">
+</td>
+</tr>
+  <tr>
+<td class="label">Bank Name</td>
+<td colspan="3">
+<input id="bank_name" readonly placeholder="Auto filled">
+</td>
+</tr>
+  <tr>
+<td class="label">Aadhar No</td>
+<td><input id="aadhar" oninput="formatAadhar(this)"></td>
+
+<td class="label">Aadhar Name</td>
+<td><input id="aadhar_name"></td>
+</tr>
+
+<tr>
+<td class="label">Aadhar DOB</td>
+<td>
+<input type="text" id="aadhar_dob" value="__/__/____"
+onclick="openCalendar()"
+oninput="autoSlashDOB(this)"
+onfocus="clearPlaceholder(this)">
+ <input type="date" id="hiddenDate" style="display:none" onchange="setDate()">
+</td>
+
+
+
+<!-- CASTE -->
+<!-- CASTE -->
+<tr>
+<td class="label">Caste Certificate</td>
+<td>
+<select id="caste" onchange="toggleField('caste','casteFields')">
+<option value="No">No</option>
+<option value="Yes">Yes</option>
+</select>
+</td>
+
+<td colspan="2">
+<div id="casteFields" style="display:none;">
+Certificate No <input id="caste_no"><br>
+Certificate Date <input type="date" id="caste_date"><br>
+Issue Place <input id="caste_place">
+  <br>Certificate Name <input id="caste_name">
+ 
+</div>
+</td>
+</tr>
+
+<!-- INCOME -->
+<tr>
+<td class="label">Income</td>
+<td>
+<select id="income" onchange="toggleField('income','incomeFields')">
+<option value="No">No</option>
+<option value="Yes">Yes</option>
+</select>
+</td>
+
+<td colspan="2">
+<div id="incomeFields" style="display:none;">
+Income Cert No <input id="income_no"><br>
+  Issue Date <input type="text" id="income_date" placeholder="DD/MM/YYYY"
+onclick="openIncomeCalendar()"
+oninput="autoSlashDOB(this)"
+onfocus="clearPlaceholder(this)">
+
+<input type="date" id="hiddenIncomeDate" style="display:none" onchange="setIncomeDate()">
+<br>Annual Income <input id="annual_income">
+</div>
+</td>
+  
+</tr>
+  
+
+<!-- BPL -->
+<tr>
+<td class="label">BPL</td>
+<td>
+<select id="bpl" onchange="toggleField('bpl','bplFields')">
+<option value="No">No</option>
+<option value="Yes">Yes</option>
+</select>
+</td>
+
+<td colspan="2">
+<div id="bplFields" style="display:none;">
+BPL No <input id="bpl_no">
+</div>
+</td>
+</tr>
+
+<!-- LAADLI -->
+<tr>
+<td class="label">Laadli</td>
+<td>
+<select id="ladli" onchange="toggleField('ladli','ladliFields')">
+<option value="No">No</option>
+<option value="Yes">Yes</option>
+</select>
+</td>
+
+<td colspan="2">
+<div id="ladliFields" style="display:none;">
+Laadli No <input id="ladli_no">
+</div>
+</td>
+</tr>
+
+<!-- SHRAMIK -->
+<tr>
+<td class="label">Shramik</td>
+<td>
+<select id="shramik" onchange="toggleField('shramik','shramikFields')">
+<option value="No">No</option>
+<option value="Yes">Yes</option>
+</select>
+</td>
+
+<td colspan="2">
+<div id="shramikFields" style="display:none;">
+Shramik No <input id="shramik_no">
+</div>
+</td>
+</tr>
+<tr>
+<td class="label">Address</td><td colspan="3"><input id="address"></td>
+</tr>
+  <tr>
+<td class="label">Gram Panchayat</td><td colspan="3"><input id="gram_panchayat"></td>
+</tr>
+<tr>
+<td class="label">Mobile</td><td colspan="3"><input id="mobile"></td>
+</tr>
+</table>
+<div style="text-align:center; padding:10px;">
+<button class="edit" onclick="enableEdit()">✏️Correction</button>
+<button class="save" onclick="saveData()">💾Save</button>
+ <button class="excel" onclick="downloadExcel()">📊Excel</button>
+ 
+</div>
+<div style="text-align:center; padding:10px; font-weight:bold; color:white; background:green;">
+© 2026 Created by Deepak Sen ICT Instructor
+</div>
+</div>
+<!-- 🔥 FIREBASE SCRIPT -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+
+// config
+const firebaseConfig = {
+  apiKey: "AIzaSyAVfFZ-dmeDLVcrc_NZme0UXma20vg-P-A",
+  authDomain: "addmission-ca94e.firebaseapp.com",
+  projectId: "addmission-ca94e",
+  storageBucket: "addmission-ca94e.firebasestorage.app",
+  messagingSenderId: "786178124065",
+  appId: "1:786178124065:web:05fcfe05a9825d49423660"
+};
+
+// init
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let oldDakhil = "";
+
+// LOCK
+function lockForm(){
+document.querySelectorAll("input, select").forEach(el=>{
+if(el.id !== "dakhil"){
+el.disabled = true;   // 👈 important
+}
+});
+}
+
+function enableEdit(){
+document.querySelectorAll("input, select").forEach(el=>{
+el.disabled = false;
+});
+}
+
+// NEW
+function newEntry(){
+document.querySelectorAll("input, select").forEach(el=> el.value="");
+
+// 🔥 सबसे important fix
+oldDakhil = "";
+
+enableEdit();
+}
+
+// SAVE
+async function saveData(){
+
+let newDakhil = document.getElementById("dakhil").value;
+
+if(!newDakhil){
+alert("Dakhil number daalo");
+return;
+}
+// 🔥 Duplicate check
+let docRef = await db.collection("students").doc(newDakhil).get();
+
+if(docRef.exists && oldDakhil === ""){
+  alert("⚠️ Ye dakhil pehle se exist karta hai");
+  return;
+}
+let data = {};
+document.querySelectorAll("input, select").forEach(el=>{
+data[el.id] = el.value;
+});
+
+if(oldDakhil !== "" && oldDakhil !== newDakhil){
+if(!confirm("Dakhil change karna hai?")) return;
+
+await db.collection("students").doc(oldDakhil).delete();
+}
+
+await db.collection("students").doc(newDakhil).set(data);
+
+alert("Saved Successfully");
+lockForm();
+
+oldDakhil = newDakhil;
+}
+
+// SEARCH
+async function searchData(){
+
+let dakhil = document.getElementById("dakhil").value;
+
+let doc = await db.collection("students").doc(dakhil).get();
+
+if(doc.exists){
+
+oldDakhil = dakhil;
+
+let data = doc.data();
+
+document.querySelectorAll("input, select").forEach(el=>{
+el.value = data[el.id] || "";
+});
+  formatAadhar(document.getElementById("aadhar"));
+ toggleField('caste','casteFields');
+toggleField('income','incomeFields');
+toggleField('bpl','bplFields');
+toggleField('ladli','ladliFields');
+toggleField('shramik','shramikFields');
+
+lockForm();
+
+}else{
+alert("Record not found");
+}
+}
+
+
+// 👇 इसके नीचे डालो
+async function smartSearch(){
+
+let value = document.getElementById("dakhil").value.trim();
+let listDiv = document.getElementById("resultList");
+
+listDiv.innerHTML = "";
+
+if(!value) return;
+
+if(!isNaN(value)){
+
+let doc = await db.collection("students").doc(value).get();
+
+if(doc.exists){
+
+let item = document.createElement("div");
+item.innerHTML = "Dakhil: " + value;
+item.style.padding = "5px";
+item.style.cursor = "pointer";
+
+item.onclick = function(){
+loadRecord(value);
+listDiv.innerHTML = "";
+};
+
+listDiv.appendChild(item);
+
+}else{
+listDiv.innerHTML = "Record not found";
+}
+
+}else{
+
+let snapshot = await db.collection("students").get();
+
+snapshot.forEach(doc=>{
+let data = doc.data();
+
+if(data.name && data.name.toLowerCase().includes(value.toLowerCase())){
+
+let item = document.createElement("div");
+item.style.padding = "5px";
+item.style.cursor = "pointer";
+item.innerHTML = data.name + " (" + doc.id + ")";
+
+item.onclick = function(){
+loadRecord(doc.id);
+listDiv.innerHTML = "";
+};
+
+listDiv.appendChild(item);
+}
+});
+
+}
+}
+
+// EXCEL
+async function downloadExcel(){
+
+alert("Excel download ho raha hai...");
+
+let snapshot = await db.collection("students").get();
+
+let dataArray = [];
+
+snapshot.forEach(doc=>{
+dataArray.push(doc.data());
+});
+
+if(dataArray.length === 0){
+alert("No data found");
+return;
+}
+
+let keys = [
+"dakhil","class","subject","name","father","mother","dob",
+"gender","category","samagra","samagra_name","account_no","ifsc_code","aadhar","aadhar_name","aadhar_dob",
+"caste","caste_no","caste_date","caste_place","caste_name",
+"income","income_no","income_date","annual_income","bpl","bpl_no","ladli","ladli_no",
+"shramik","shramik_no","address","gram_panchayat","mobile"
+];
+let content = keys.join("\t") + "\n";
+
+dataArray.forEach(row=>{
+content += keys.map(k=>row[k] || "").join("\t") + "\n";
+});
+
+let blob = new Blob([content], {type:"application/vnd.ms-excel"});
+let link = document.createElement("a");
+link.href = URL.createObjectURL(blob);
+link.download = "students.xls";
+link.click();
+}
+ 
+
+// 🔥 यहीं डालो (सबसे ऊपर या नीचे भी डाल सकते हो)
+function toggleField(selectId, fieldId){
+let value = document.getElementById(selectId).value;
+let div = document.getElementById(fieldId);
+
+if(value === "Yes"){
+div.style.display = "block";
+}else{
+div.style.display = "none";
+}
+}
+
+
+
+// बाकी तुम्हारा code
+ 
+window.onload = function(){
+  toggleField('caste','casteFields');
+  toggleField('income','incomeFields');
+  toggleField('bpl','bplFields');
+  toggleField('ladli','ladliFields');
+  toggleField('shramik','shramikFields');
+}
+ function autoSlashDOB(input){
+
+let value = input.value.replace(/\D/g, ''); // सिर्फ number
+
+if(value.length > 8) value = value.slice(0,8);
+
+let result = "";
+
+if(value.length >= 1){
+result = value.substring(0,2);
+}
+if(value.length >= 3){
+result += "/" + value.substring(2,4);
+}
+if(value.length >= 5){
+result += "/" + value.substring(4,8);
+}
+
+input.value = result;
+}
+function openCalendarDOB(){
+document.getElementById("hiddenDOB").click();
+}
+
+function setDOB(){
+let hidden = document.getElementById("hiddenDOB").value;
+
+if(hidden){
+let parts = hidden.split("-");
+let formatted = parts[2]+"/"+parts[1]+"/"+parts[0];
+
+document.getElementById("dob").value = formatted;
+}
+}
+async function loadRecord(dakhil){
+
+let doc = await db.collection("students").doc(dakhil).get();
+
+if(doc.exists){
+
+oldDakhil = dakhil;
+let data = doc.data();
+
+// 👉 form fill
+document.querySelectorAll("input, select").forEach(el=>{
+el.value = data[el.id] || "";
+});
+formatAadhar(document.getElementById("aadhar"));
+// 👉 special fields show/hide
+toggleField('caste','casteFields');
+toggleField('income','incomeFields');
+toggleField('bpl','bplFields');
+toggleField('ladli','ladliFields');
+toggleField('shramik','shramikFields');
+
+// 👉 form lock
+lockForm();
+
+}else{
+alert("Record not found");
+}
+}
+  async function getBankDetails(){
+
+let ifsc = document.getElementById("ifsc_code").value.trim();
+
+if(ifsc.length < 5) return;
+
+try{
+
+let res = await fetch("https://ifsc.razorpay.com/" + ifsc);
+let data = await res.json();
+
+if(data.BANK){
+document.getElementById("bank_name").value = data.BANK;
+}else{
+document.getElementById("bank_name").value = "Not found";
+}
+
+}catch(e){
+document.getElementById("bank_name").value = "Invalid IFSC";
+}
+
+}
+  function formatAadhar(input){
+
+let value = input.value.replace(/\D/g, ''); // सिर्फ number
+
+if(value.length > 12) value = value.slice(0,12);
+
+// 4-4 के group
+let formatted = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+input.value = formatted;
+}
+
+ 
+</script>
+</body>
+</html>
