@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Report</title>
+
+<style>
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#74ebd5,#9face6);
+}
+
+.container{
+width:98%;
+margin:auto;
+background:white;
+padding:10px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+}
+
+.search-box input{
+padding:8px;
+width:220px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+.count{
+font-weight:bold;
+margin:10px 0;
+color:#0d47a1;
+}
+
+.buttons{
+text-align:right;
+margin-bottom:10px;
+}
+
+button{
+padding:8px 12px;
+margin-left:5px;
+border:none;
+border-radius:6px;
+background:linear-gradient(45deg,#2196F3,#00bcd4);
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.table-container{
+overflow-x:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:12px;
+}
+
+th{
+background:#0d47a1;
+color:white;
+padding:6px;
+}
+
+td{
+border:1px solid #ddd;
+padding:5px;
+text-align:center;
+white-space:nowrap;
+}
+
+tr:nth-child(even){
+background:#f2f2f2;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h2>📋 Student Report</h2>
+
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="🔍 Search..." oninput="filterTable()">
+</div>
+</div>
+
+<div class="count" id="counts">
+Total: 0 | 9th: 0 | 11th: 0
+</div>
+
+<div class="buttons">
+<button onclick="downloadExcelByClass('9th')">📊 9th Excel</button>
+<button onclick="downloadExcelByClass('11th')">📊 11th Excel</button>
+</div>
+
+<div class="table-container">
+<table>
+<thead id="tableHead"></thead>
+<tbody id="tableData"></tbody>
+</table>
+</div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+apiKey: "AIzaSyAVfFZ-dmeDLVcrc_NZme0UXma20vg-P-A",
+authDomain: "addmission-ca94e.firebaseapp.com",
+projectId: "addmission-ca94e",
+storageBucket: "addmission-ca94e.firebasestorage.app",
+messagingSenderId: "786178124065",
+appId: "1:786178124065:web:05fcfe05a9825d49423660"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let allData = [];
+
+// ✅ FIXED ORDER (FORM SAME)
+let keys = [
+"dakhil","class","subject","name","father","mother","dob",
+"gender","category","samagra","samagra_name",
+"account_no","ifsc_code","bank_name",
+"aadhar","aadhar_name","aadhar_dob",
+"caste","caste_no","caste_date","caste_place","caste_name",
+"income","income_no","income_date","annual_income",
+"bpl","bpl_no","ladli","ladli_no",
+"shramik","shramik_no",
+"address","gram_panchayat","mobile"
+];
+
+// LOAD DATA
+async function loadData(){
+
+let snapshot = await db.collection("students").get();
+
+allData = [];
+
+let count9 = 0;
+let count11 = 0;
+
+snapshot.forEach(doc=>{
+let data = doc.data();
+data.dakhil = doc.id;
+
+allData.push(data);
+
+if(data.class === "9th") count9++;
+if(data.class === "11th") count11++;
+});
+
+// HEADER
+let headRow = "<tr>";
+keys.forEach(k=>{
+headRow += `<th>${k.replaceAll("_"," ").toUpperCase()}</th>`;
+});
+headRow += "</tr>";
+
+document.getElementById("tableHead").innerHTML = headRow;
+
+// TABLE
+renderTable(allData);
+
+// COUNT
+document.getElementById("counts").innerText =
+`Total: ${allData.length} | 9th: ${count9} | 11th: ${count11}`;
+
+}
+
+// TABLE RENDER
+function renderTable(dataArray){
+
+let table = document.getElementById("tableData");
+table.innerHTML = "";
+
+dataArray.forEach(row=>{
+
+let tr = "<tr>";
+
+keys.forEach(k=>{
+tr += `<td>${row[k] || ""}</td>`;
+});
+
+tr += "</tr>";
+
+table.innerHTML += tr;
+
+});
+
+}
+
+// SEARCH
+function filterTable(){
+
+let value = document.getElementById("searchInput").value.toLowerCase();
+
+let filtered = allData.filter(row=>{
+return keys.some(k=>{
+return (row[k] || "").toString().toLowerCase().includes(value);
+});
+});
+
+renderTable(filtered);
+
+}
+
+// EXCEL
+async function downloadExcelByClass(className){
+
+let snapshot = await db.collection("students")
+.where("class","==",className)
+.get();
+
+let dataArray = [];
+
+snapshot.forEach(doc=>{
+let data = doc.data();
+data.dakhil = doc.id;
+dataArray.push(data);
+});
+
+if(dataArray.length === 0){
+alert("No data found");
+return;
+}
+
+let content = keys.join("\t") + "\n";
+
+dataArray.forEach(row=>{
+content += keys.map(k=>row[k] || "").join("\t") + "\n";
+});
+
+let blob = new Blob([content], {type:"application/vnd.ms-excel"});
+let link = document.createElement("a");
+link.href = URL.createObjectURL(blob);
+link.download = className + "_students.xls";
+link.click();
+
+}
+
+// AUTO LOAD
+loadData();
+
+</script>
+
+</body>
+</html>
